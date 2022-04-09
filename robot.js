@@ -4,12 +4,9 @@ const request = require('request')
 const urlencode = require('urlencode');
 
 const contentList = [
-    '做了个这app也没人用，老大让我来陪您聊天~',
-    '客官您好，一号技师为您服务~',
-    '广播广播：前端使用react全家桶+hooks完成，后端使用node+express框架搭建',
-    '偷偷告诉你，sultan是一个热爱技术的死瘦宅。别泄密哦',
-    '代码虽美，可不要贪杯哦。',
-    '点击左上角三个点可以切换头像哦',
+    '欢迎访问WebIM--在线聊天系统',
+    '技术选型：前端使用react全家桶+hooks完成，后端使用node.js+koa框架搭建',
+    '代码虽美，可不要贪杯哦。'
 ]
 
 function getRandomContent() {
@@ -19,10 +16,8 @@ function getRandomContent() {
 }
 
 const mockRobotHistory = {
-    history: [
-    ],
-    lastHistory: {
-    },
+    history: [],
+    lastHistory: {},
     owner: [],
     _id: robotUid,
 }
@@ -58,13 +53,12 @@ async function autoReply(msg, converId) {
                 sendData.content = content;
                 resolve(sendData);
             } else {
-                sendData.content = '对不起，网络故障了，请联系下sultan~'
+                sendData.content = '对不起，网络故障了'
                 reject(sendData);
             }
         })
     })
 }
-
 
 module.exports = {
     robotUid,

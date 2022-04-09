@@ -4,7 +4,6 @@ const mongo = require('../mongodb/mongoose');
 const {robotUid, mockRobotHistory} = require('../robot');
 const { wsMap } = require('../websocket');
 const { initChatHistoryModel} = require('../mongodb/server');
-const mongoose = require("mongoose")
 
 router.prefix('/chat')
 
@@ -16,14 +15,14 @@ router.post('/contact',async (ctx, next)=> {
 
     // 查找联系人列表
     const _linkManList = linkManList.length ? await mongo.userModel.find({"_id": {$in: linkManList.map(item=> item.uid)}}, 
-    {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,avatoar:1, _id: 1, isOnLine: 1, signature: 1 }) : []
+    {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,portrait:1, _id: 1, isOnLine: 1, signature: 1 }) : []
 
     // 查找验证列表
     const _noValidation = noValidation.length ? await mongo.userModel.find({"_id": {$in: noValidation}}, 
-    {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,avatoar:1 }) : []
+    {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,portrait:1 }) : []
 
     // const _noValidation = noValidation.length ? await mongo.chatHistoryModel.find({"_id": {$in: noValidation}}, 
-    // {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,avatoar:1 }) : []
+    // {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,portrait:1 }) : []
 
     // 将converId字段加到联系人列表中返回, 返回一个mao后的联系人列表
     const mapLinkManList =  _linkManList.map(item=> ({
@@ -33,7 +32,7 @@ router.post('/contact',async (ctx, next)=> {
         nickname: item.nickname,
         username: item.username,
         email: item.email,
-        avatoar: item.avatoar,
+        portrait: item.portrait,
         signature: item.signature,
         uid: String(item._id),
         converId: (linkManList.find(man=> man.uid === String(item._id)) || {}).converId || robotUid,
@@ -76,16 +75,16 @@ router.post('/queryLinkman',async (ctx, next)=> {
 
     const {linkManList} = await mongo.userLinkManModel.findOne({uid})
 
-    // 查找规则： 否和名称匹配且不为自己好友
+    // 查找规则： 符合名称匹配且不为自己好友
     await mongo.userModel.find({ nickname: reg, "_id": {$nin: linkManList.map(item=> item.uid)}}).then(result=> {
         const _result =  result.map(item=> {
-            const { username, lastLoginTime, isOnLine, portraitUrl, nickname, avatoar, _id } = item;
-            return { username, lastLoginTime, isOnLine, portraitUrl, nickname, avatoar, _id }
+            const { username, lastLoginTime, isOnLine, portraitUrl, nickname, portrait, _id } = item;
+            return { username, lastLoginTime, isOnLine, portraitUrl, nickname, portrait, _id }
         }).filter(item=> String(item._id) !== uid)
         // console.log(_result);
-        ctx.response.body ={
-            queryList : _result
-        }
+        ctx.response.body =[
+            ..._result
+        ]
     })
 })
 
@@ -110,7 +109,7 @@ router.post('/addLinkMan',async (ctx, next)=> {
     const linkManObj = await mongo.userModel.findOne({username})
 
     const userInfo = await mongo.userModel.findOne({_id: uid}, 
-        {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,avatoar:1 })
+        {sex: 1,lastLoginTime:1, isOnLine:1, nickname:1,username:1,email:1,portrait:1 })
         
             
     // 当A用户请求加B好友，先去便利ws列表，如果该用户在线，就会直接受到好友请求。
@@ -172,8 +171,6 @@ router.post('/createGroup',  async (ctx, next)=> {
         resultObj,
     }
 })
-
-
 
 module.exports = router;
 

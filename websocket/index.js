@@ -15,15 +15,15 @@ function heartbeat() {
 }
 
 const wsMap = new Map();
-  
 
-// 创建 websocket 服务器 监听在 3000 端口
+// 创建 websocket 服务器 监听在 7779 端口
 const wss = new WebSocketServer({port: 7779})
 
 wss.on('connection', (ws)=> {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
     // console.log(ws);
+
     ws.on('message',async (message)=>{
         const { msg, type, SUB_UID, PUB_UID, converId, talkerName} = JSON.parse(message);
         
@@ -33,6 +33,7 @@ wss.on('connection', (ws)=> {
                 type: 'session',
                 data: createkRobatFirstConver(),
             }))
+
             // 将当前客户端发来的uid存入map数组里
             wsMap.set(ws, SUB_UID)
             setUserIsOnline(SUB_UID, true)
@@ -92,6 +93,7 @@ wss.on('connection', (ws)=> {
             const result = await mongo.chatHistoryModel.updateOne({_id: converId}, {$push: {history}, lastHistory: history})
         }
     })
+
     ws.on('close',()=> {
         let uid = wsMap.get(ws)
         // 将对应用户在线状态设置为false
@@ -106,7 +108,7 @@ const interval = setInterval(function ping() {
     wss.clients.forEach(function each(ws) {
       if (ws.isAlive === false) {
         return ws.terminate()
-      };
+      }
       ws.isAlive = false;
       ws.ping(noop);
     });

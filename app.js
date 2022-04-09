@@ -5,7 +5,7 @@ const json = require('koa-json')
 const bodyparser = require('koa-bodyparser')
 const onerror = require('koa-onerror')
 const cors = require('koa-cors')
-var morgan = require('koa-morgan')
+const morgan = require('koa-morgan')
 require('./websocket/index')
 
 // error handler
@@ -17,7 +17,7 @@ app.use(bodyparser({
 }))
 app.use(json())
 
-// create a write stream (in append mode)
+// create a writing stream (in append mode)
 const accessLogStream = fs.createWriteStream(__dirname + '/access.log', { flags: 'a' })
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }))

@@ -3,13 +3,14 @@
 // 大多数情况下，他被用来把结构化的模式应用到一个MongoDB集合，并提供了验证和类型装换等好处
 // 基于MongoDB驱动，通过关系型数据库的思想来实现非关系型数据库
 
-const url = "mongodb://localhost:27017/pc_chat";
+const url = "mongodb://localhost:27017/WebIM";
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 const { v4: uuidv4 } = require('uuid');
 const {robotUid} = require('../robot');
 
 mongoose.set('useFindAndModify', false)
+
 class MongoDB {
     constructor(mongoose) {
         this.mongoose = mongoose;
@@ -22,6 +23,7 @@ class MongoDB {
         // 生成聊天机器人
         this.createRobot()
     }
+
     // 初始化集合的模型
     initModelSchema() {
         this.userModel = this.mongoose.model('User',new Schema({
@@ -37,8 +39,8 @@ class MongoDB {
                 type: String,
                 require: true,
             },
-            // avatoar头像
-            avatoar : {
+            // portrait头像
+            portrait : {
                 type: Schema.Types.Mixed,
                 require: false,
                 default: {
@@ -72,6 +74,7 @@ class MongoDB {
                 default: false,
             }
         }))
+
         this.chatHistoryModel = this.mongoose.model('ChatHistory',new Schema({
             lastHistory: {
                 type: Schema.Types.Mixed,
@@ -99,6 +102,7 @@ class MongoDB {
                 type: String,
             }
         }))
+
         this.userLinkManModel = this.mongoose.model('UserLinkMan',new Schema({
             username: {
                 type: String,
@@ -111,7 +115,6 @@ class MongoDB {
                 type: Array,
                 default: [],
             },
-            
             noValidation: {
                 type: Array,
                 default: [],
@@ -125,6 +128,7 @@ class MongoDB {
             },
         }))
     }
+
     connect() {
         this.mongoose.connect(this.DB_URL,
             { useNewUrlParser: true ,useUnifiedTopology: true}, 
@@ -133,17 +137,8 @@ class MongoDB {
                 console.log("数据库连接成功")
             }
         })
-        // return new Promise((resolve, reject)=> {
-        //     this.MongoClient.connect(this.DB_URL, 
-        //         // 配置这个不会出现控制台报错
-        //         { useNewUrlParser: true ,useUnifiedTopology: true}, 
-        //         function(err, db) {
-        //         if (err) reject(err);
-        //         let dbo = db.db("account");
-        //         resolve({db, dbo})
-        //       });
-        // })
     }
+
     register(accountObj) {
         return new Promise(async (resolve, reject)=> {
             const{ username } = accountObj;
@@ -158,7 +153,7 @@ class MongoDB {
             }
             this.userModel.create({
                 lastLoginTime: new Date().getTime(),
-                nickname: '用户'+ uuidv4().slice(0, 6),
+                nickname: username,
                 ...accountObj}
             )
             .then(user=> {
@@ -170,6 +165,7 @@ class MongoDB {
             })
         })
     }
+
     login({username, password}) {
         return new Promise((resolve, reject)=> {
             this.find({username, password})
@@ -189,11 +185,7 @@ class MongoDB {
             })
         })
     }
-    /**
-     * 
-     * @param {Object} queryObject 
-     * @returns {Array} 满足查询条件的数据 
-     */
+
     find( queryObject = {}) {
         return new Promise((resolve)=> {
             this.userModel.find(queryObject).then(result=> {
@@ -201,6 +193,7 @@ class MongoDB {
             })
         })
     }
+
     // 模糊查询
     dimFind( queryObject = {}, rule) {
         return new Promise((resolve)=> {
@@ -209,6 +202,7 @@ class MongoDB {
             })
         })
     }
+
     async createRobot() {
         const resultObj = await this.find({username: 'admin-robot'})
         if((resultObj || []).length > 0) {
@@ -219,10 +213,10 @@ class MongoDB {
             sex : 1,
             isOnLine: true,
             _id: robotUid,
-            nickname: '机器人-sultan',
-            email: 'sultan@163.com',
+            nickname: '机器人',
+            email: '123@qq.com',
             signature: '有什么不明白的可以问我哦',
-            avatoar : {
+            portrait : {
                 AvatarStyle : "Transparent",
                 Top : "NoHair",
                 Accessories : "Wayfarers",

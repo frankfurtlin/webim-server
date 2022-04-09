@@ -45,8 +45,8 @@ router.post('/login', async (ctx, next) => {
 
 /* 账号注册 */
 router.post('/register', async (ctx, next) => {
-  const { username, password, email, randomAvatar } = ctx.request.body;
-  await mongo.register({ username, password, email, randomAvatar, signature: '这个人很懒，还没有填写个性签名', isOnLine: false })
+  const { username, password, email, portrait } = ctx.request.body;
+  await mongo.register({ username, password, email, portrait, signature: '这个人很懒，还没有填写个性签名', isOnLine: false })
     .then((result => {
       // console.log(result);
       const { success, user } = result;
@@ -71,10 +71,10 @@ router.post('/register', async (ctx, next) => {
 });
 
 // 修改用户头像
-router.post('/avatoar', async (ctx, next) => {
+router.post('/portrait', async (ctx, next) => {
   const uid = ctx.request.header.uid;
-  const { avatoar } = ctx.request.body;
-  await mongo.userModel.updateOne({ _id: uid }, { avatoar }, {}, (result) => {
+  const { portrait } = ctx.request.body;
+  await mongo.userModel.updateOne({ _id: uid }, { portrait } , {}, (result) => {
     ctx.response.body ={
       success: true,
       code: 'success',
@@ -103,7 +103,7 @@ router.post('/queryUser', async (ctx, next) => {
     username,
     email,
     sex,
-    avatoar,
+    portrait,
     signature,
   } = result;
   ctx.response.body ={
@@ -111,7 +111,7 @@ router.post('/queryUser', async (ctx, next) => {
     username,
     email,
     sex,
-    avatoar,
+    portrait,
     uid,
     signature,
   }
@@ -186,7 +186,7 @@ router.post('/respondAdd', async (ctx, next) => {
       const _uid = map[1]
       if (_uid === _id) {
         let userinfo = await mongo.userModel.findOne({ _id: uid },
-          { sex: 1, lastLoginTime: 1, isOnLine: 1, nickname: 1, username: 1, email: 1, avatoar: 1 })
+          { sex: 1, lastLoginTime: 1, isOnLine: 1, nickname: 1, username: 1, email: 1, portrait: 1 })
         ws.send(JSON.stringify({
           type: 'linkmanResponse',
           data: {
