@@ -4,7 +4,7 @@ const WebSocketServer = WebSocket.Server;
 const PubSub = require('pubsub-js');
 // 引入mongodb数据库
 const mongo = require('../mongodb/mongoose');
-const {robotUid, autoReply, createkRobatFirstConver} = require('../robot');
+const {robotUid, autoReply, createRobotFirstConver} = require('../robot');
 const { setUserIsOnline } = require('../mongodb/server')
 
 function noop() {}
@@ -31,7 +31,7 @@ wss.on('connection', (ws)=> {
             // 机器人自动发送一条消息
             ws.send(JSON.stringify({
                 type: 'session',
-                data: createkRobatFirstConver(),
+                data: createRobotFirstConver(),
             }))
 
             // 将当前客户端发来的uid存入map数组里

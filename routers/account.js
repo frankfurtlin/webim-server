@@ -45,10 +45,9 @@ router.post('/login', async (ctx, next) => {
 
 /* 账号注册 */
 router.post('/register', async (ctx, next) => {
-  const { username, password, email, portrait } = ctx.request.body;
-  await mongo.register({ username, password, email, portrait, signature: '这个人很懒，还没有填写个性签名', isOnLine: false })
+  const { username, password, email, avatar } = ctx.request.body;
+  await mongo.register({ username, password, email, avatar, signature: '这个人很懒，还没有填写个性签名', isOnLine: false })
     .then((result => {
-      // console.log(result);
       const { success, user } = result;
       if (success) {
         // 登陆成功，添加token验证，token生成需要三个参数，用户信息，密钥，过期时间
@@ -71,10 +70,10 @@ router.post('/register', async (ctx, next) => {
 });
 
 // 修改用户头像
-router.post('/portrait', async (ctx, next) => {
+router.post('/avatar', async (ctx, next) => {
   const uid = ctx.request.header.uid;
-  const { portrait } = ctx.request.body;
-  await mongo.userModel.updateOne({ _id: uid }, { portrait } , {}, (result) => {
+  const { avatar } = ctx.request.body;
+  await mongo.userModel.updateOne({ _id: uid }, { avatar } , {}, (result) => {
     ctx.response.body ={
       success: true,
       code: 'success',
@@ -103,7 +102,7 @@ router.post('/queryUser', async (ctx, next) => {
     username,
     email,
     sex,
-    portrait,
+    avatar,
     signature,
   } = result;
   ctx.response.body ={
@@ -111,7 +110,7 @@ router.post('/queryUser', async (ctx, next) => {
     username,
     email,
     sex,
-    portrait,
+    avatar,
     uid,
     signature,
   }

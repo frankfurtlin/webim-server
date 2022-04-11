@@ -39,8 +39,8 @@ class MongoDB {
                 type: String,
                 require: true,
             },
-            // portrait头像
-            portrait : {
+            // avatar卡通头像
+            avatar : {
                 type: Schema.Types.Mixed,
                 require: false,
                 default: {
@@ -194,15 +194,6 @@ class MongoDB {
         })
     }
 
-    // 模糊查询
-    dimFind( queryObject = {}, rule) {
-        return new Promise((resolve)=> {
-            this.userModel.find(queryObject).then(result=> {
-                resolve(result)
-            })
-        })
-    }
-
     async createRobot() {
         const resultObj = await this.find({username: 'admin-robot'})
         if((resultObj || []).length > 0) {
@@ -216,7 +207,7 @@ class MongoDB {
             nickname: '机器人',
             email: '123@qq.com',
             signature: '有什么不明白的可以问我哦',
-            portrait : {
+            avatar : {
                 AvatarStyle : "Transparent",
                 Top : "NoHair",
                 Accessories : "Wayfarers",
@@ -240,7 +231,3 @@ class MongoDB {
 let mongo = new MongoDB(mongoose, url)
 
 module.exports = mongo;
-
-// return new Promise((resolve, reject)=> {
-    
-// })

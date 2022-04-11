@@ -20,7 +20,7 @@ function checkToken(req, res, next) {
     // 每次登陆必须携带uid
     if(!uid) {
         return res.status(401).json({
-            msg: 'uid呢兄弟?'
+            msg: 'uid呢?'
         })
     }
     // 进行token解密，需要token和签名。

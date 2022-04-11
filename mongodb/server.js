@@ -31,7 +31,7 @@ function initChatHistoryModel({ members, type, groupName, owner }) {
 
     let Model = {
         members: members,
-        lastHistory: new Object(),
+        lastHistory: {},
         history: [
             // {
             //     date: '123123',

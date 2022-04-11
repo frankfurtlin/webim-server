@@ -22,7 +22,7 @@ const mockRobotHistory = {
     _id: robotUid,
 }
 
-const createkRobatFirstConver = ()=> {
+const createRobotFirstConver = ()=> {
     return {
         content: getRandomContent(),
         converId: robotUid,
@@ -64,5 +64,5 @@ module.exports = {
     robotUid,
     autoReply,
     mockRobotHistory,
-    createkRobatFirstConver,
+    createRobotFirstConver,
 };
