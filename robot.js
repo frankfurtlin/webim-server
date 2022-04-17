@@ -26,7 +26,7 @@ const createRobotFirstConver = ()=> {
     return {
         content: getRandomContent(),
         converId: robotUid,
-        date: 1620989470955,
+        date: new Date().getTime(),
         read: [],
         talker: robotUid,
         type: "text",

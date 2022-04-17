@@ -1,6 +1,7 @@
 const mongo = require('./mongoose');
 const { robotUid } = require('../robot')
 
+// 初始化联系人
 function initUserLinkMan(username, uid) {
     return new Promise((resolve) => {
         mongo.userLinkManModel.create({
@@ -27,6 +28,7 @@ function initUserLinkMan(username, uid) {
     })
 }
 
+// 初始化聊天记录
 function initChatHistoryModel({ members, type, groupName, owner }) {
 
     let Model = {
@@ -43,6 +45,7 @@ function initChatHistoryModel({ members, type, groupName, owner }) {
         ],
         type,
     }
+
     if (type === 'group') {
         Model.owner = owner;
         Model.groupName = groupName;
@@ -60,6 +63,7 @@ function initChatHistoryModel({ members, type, groupName, owner }) {
     })
 }
 
+// 设置用户在线
 async function setUserIsOnline(uid, isOnLine) {
     await mongo.userModel.updateOne({ _id: uid }, { isOnLine, lastLoginTime: new Date().getTime() })
 }

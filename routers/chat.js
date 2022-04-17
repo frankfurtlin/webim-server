@@ -8,7 +8,7 @@ const { initChatHistoryModel} = require('../mongodb/server');
 router.prefix('/chat')
 
 // 查询最近联系人会话
-router.post('/contact',async (ctx, next)=> {
+router.post('/contact', async (ctx, next)=> {
 
     const uid = ctx.request.header.uid; 
     const {linkManList, noValidation, sessionList, groupList} = await mongo.userLinkManModel.findOne({uid})
@@ -49,7 +49,7 @@ router.post('/contact',async (ctx, next)=> {
 })
 
 // 查询聊天记录
-router.post('/chatData',async (ctx, next)=> {
+router.post('/chatData', async (ctx, next)=> {
     const uid = ctx.request.header.uid;
 
     const {linkManList, groupList} = await mongo.userLinkManModel.findOne({uid})
@@ -65,7 +65,7 @@ router.post('/chatData',async (ctx, next)=> {
 })
 
 // 以昵称搜索用户
-router.post('/queryLinkman',async (ctx, next)=> {
+router.post('/queryLinkman', async (ctx, next)=> {
     const { username } = ctx.request.body;
     const uid = ctx.request.header.uid;
     const reg = new RegExp(username)
@@ -86,7 +86,7 @@ router.post('/queryLinkman',async (ctx, next)=> {
 })
 
 // 添加联系人
-router.post('/addLinkMan',async (ctx, next)=> {
+router.post('/addLinkMan', async (ctx, next)=> {
     const { username } = ctx.request.body;
 
     const uid = ctx.request.header.uid;
@@ -129,7 +129,7 @@ router.post('/addLinkMan',async (ctx, next)=> {
 })
 
 // 生成群聊
-router.post('/createGroup',  async (ctx, next)=> {
+router.post('/createGroup', async (ctx, next)=> {
     const { usersList, nickname } = ctx.request.body;
     const uid = ctx.request.header.uid;
     // mongo.chatHistoryModel.findOne({_id: '609f546516f4c23dc024eb48'}).populate('owner')

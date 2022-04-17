@@ -16,8 +16,8 @@ function heartbeat() {
 
 const wsMap = new Map();
 
-// 创建 websocket 服务器 监听在 7779 端口
-const wss = new WebSocketServer({port: 7779})
+// 创建 websocket 服务器 监听在 3002 端口
+const wss = new WebSocketServer({port: 3002})
 
 wss.on('connection', (ws)=> {
     ws.isAlive = true;
@@ -25,8 +25,10 @@ wss.on('connection', (ws)=> {
     // console.log(ws);
 
     ws.on('message',async (message)=>{
+        console.log(JSON.parse(message))
         const { msg, type, SUB_UID, PUB_UID, converId, talkerName} = JSON.parse(message);
-        
+
+        // 建立连接请求
         if(type === 'sub') {
             // 机器人自动发送一条消息
             ws.send(JSON.stringify({
@@ -37,12 +39,14 @@ wss.on('connection', (ws)=> {
             // 将当前客户端发来的uid存入map数组里
             wsMap.set(ws, SUB_UID)
             setUserIsOnline(SUB_UID, true)
+
             PubSub.subscribe(SUB_UID, (PUB_UID, {msg, converId, SUB_UID, talkerName})=> {
                 const sendData = {
                     date: new Date().getTime(),
                     talker: SUB_UID,
                     content: msg,
                     read: [],
+                    isRead : true,
                     type:'text',
                     converId,
                     talkerName,
@@ -52,7 +56,10 @@ wss.on('connection', (ws)=> {
                     data: sendData,
                 }))
             })
-        }else {
+        }
+
+        else {
+            let isRead = false;
             // PUB_UID 为Object时候，说明发送为群消息
             if(PUB_UID instanceof Object) {
                 for(let map of wsMap) {
@@ -61,35 +68,40 @@ wss.on('connection', (ws)=> {
                         PubSub.publish(_uid, {msg, converId, SUB_UID, talkerName})
                     }
                 }
-            }else {
-              PubSub.publish(PUB_UID, {msg, converId, SUB_UID})
+            } else {
+                PubSub.publish(PUB_UID, {isRead, msg, converId, SUB_UID})
+                isRead = true
             }
+
             // 如果是发送给机器人，则不存入数据库
-                if(PUB_UID === robotUid) {
-                    try {
-                        const result = await autoReply(msg, converId)
-                        // console.log(result);
-                        ws.send(JSON.stringify({
-                            type: 'session',
-                            data: result,
-                        }))
-                    } catch (sendData) {
-                        ws.send(JSON.stringify({
-                            type: 'session',
-                            data: sendData,
-                        }))
-                    }
-                    return;
+            if(PUB_UID === robotUid) {
+                try {
+                    const result = await autoReply(msg, converId)
+                    // console.log(result);
+                    ws.send(JSON.stringify({
+                        type: 'session',
+                        data: result,
+                    }))
+                } catch (sendData) {
+                    ws.send(JSON.stringify({
+                        type: 'session',
+                        data: sendData,
+                    }))
+                }
+                return;
             }
+
             // 每当有人发送了记录，就把记录存到对应convertId里
             const history = {
                 date: new Date().getTime(),
                 talker: SUB_UID,
                 content: msg,
                 read: [],
+                isRead: isRead,
                 type: 'text',
                 talkerName,
             }
+
             const result = await mongo.chatHistoryModel.updateOne({_id: converId}, {$push: {history}, lastHistory: history})
         }
     })
@@ -103,7 +115,7 @@ wss.on('connection', (ws)=> {
     })
 })
 
-// 20s进行一个心跳检测
+// 10s进行一个心跳检测
 const interval = setInterval(function ping() {
     wss.clients.forEach(function each(ws) {
       if (ws.isAlive === false) {
@@ -112,7 +124,7 @@ const interval = setInterval(function ping() {
       ws.isAlive = false;
       ws.ping(noop);
     });
-  }, 10000);
+  }, 5000);
   
 wss.on('close', function close() {
   clearInterval(interval);

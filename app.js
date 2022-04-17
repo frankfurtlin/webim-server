@@ -4,7 +4,7 @@ const fs = require('fs')
 const json = require('koa-json')
 const bodyparser = require('koa-bodyparser')
 const onerror = require('koa-onerror')
-const cors = require('koa-cors')
+const cors = require('koa2-cors')
 const morgan = require('koa-morgan')
 require('./websocket/index')
 
